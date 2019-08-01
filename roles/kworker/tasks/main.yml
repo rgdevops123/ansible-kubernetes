@@ -1,0 +1,47 @@
+---
+- name: Install Docker.
+  yum:
+    name: docker
+    state: present
+    update_cache: true
+
+- name: Start Docker.
+  service:
+    name: docker
+    state: started
+
+- name: Enable Docker.
+  service:
+    name: docker
+    enabled: yes
+
+- name: Add Kubernetes YUM Repository.
+  yum_repository:
+   name: Kubernetes
+   description: Kubernetes YUM repository
+   baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+   gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+   gpgcheck: yes
+
+- name: Install kubelet.
+  yum:
+     name: kubelet-1.15.1
+     state: present
+     update_cache: true
+
+- name: Install kubeadm.
+  yum:
+     name: kubeadm-1.15.1
+     state: present
+
+- name: Start kubelet.
+  service:
+    name: kubelet
+    enabled: yes
+    state: started
+
+- name: Join Cluster.
+  shell: "{{ hostvars['km1'].join_command }} --ignore-preflight-errors all  >> node_joined.txt"
+  args:
+    chdir: $HOME
+    creates: node_joined.txt

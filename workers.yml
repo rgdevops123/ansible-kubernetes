@@ -1,0 +1,13 @@
+---
+- hosts: masters
+  remote_user: centos
+  become: yes
+  gather_facts: false
+  roles:
+    - joincmd
+
+- hosts: workers
+  remote_user: centos
+  become: yes
+  roles:
+    - kworker
